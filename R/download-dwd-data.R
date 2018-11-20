@@ -161,7 +161,7 @@ dwd_down <- function(dwd_var = c("air_temperature", "precipitation","wind","sola
   gps_info_station <- data.frame(ID = ids,
                                  x = station_info_merge_all_4[station_to_download,6],
                                  y = station_info_merge_all_4[station_to_download,5],
-                                 distance =   unlist(lapply(1:nrow(new.pos), function(x) round(spDistsN1(pts = as.matrix(station_info_merge_all_4[,5:6]), new.pos[x,], longlat=T)[station_to_download[x]], 2))),
+                                 distance =   unlist(lapply(1:nrow(new.pos), function(x) round(sp::spDistsN1(pts = as.matrix(station_info_merge_all_4[,5:6]), new.pos[x,], longlat=T)[station_to_download[x]], 2))),
                                  cx = x_coordinates,
                                  cy = y_coordinates)
 
