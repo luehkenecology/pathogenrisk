@@ -4,9 +4,9 @@
 \alias{dwd_down}
 \title{Title}
 \usage{
-dwd_down(dwd_var = "air_temperature", x_coordinates = c(9.000461),
-  y_coordinates = c(50.13213), ids = c("A"),
-  from_date = "2017-03-01", to_date = "2017-10-31")
+dwd_down(dwd_var = c("air_temperature", "solar"),
+  x_coordinates = c(9.000461), y_coordinates = c(50.13213),
+  ids = c("A"), from_date = "2017-03-01", to_date = "2017-10-31")
 }
 \arguments{
 \item{to_date}{}

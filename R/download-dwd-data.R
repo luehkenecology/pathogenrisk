@@ -11,19 +11,16 @@
 #' @export
 #'
 #' @examples dwd_down()
-dwd_down <- function(dwd_var = "air_temperature",
+dwd_down <- function(dwd_var = c("air_temperature", "precipitation","wind","solar"),
                      x_coordinates = c(9.000461),
                      y_coordinates = c(50.13213),
                      ids = c("A"),
                      from_date = "2017-03-01",
                      to_date = "2017-10-31"){
 
+  dwd_var <- match.arg(dwd_var)
+
   # load libraries----------------------------------------------------------------------
-  #require(lubridate)
-  #require(stringr)
-  #require(sp)
-  #require(RCurl)
-  #require(raster)
   source("R/down_unzip_dwd.R")
 
   # download station info----------------------------------------------------------------------
@@ -35,11 +32,11 @@ dwd_down <- function(dwd_var = "air_temperature",
 
   # get all URLs of files (different directories for solar)
   if(dwd_var == "solar"){
-    station_url <- getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var, "/", sep = ""),
+    station_url <- RCurl::getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var, "/", sep = ""),
                           verbose=TRUE,ftp.use.epsv=TRUE,
                           dirlistonly = TRUE)
   } else {
-    station_url <- getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var,"/recent/", sep = ""),
+    station_url <- RCurl::getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var,"/recent/", sep = ""),
                           verbose=TRUE,ftp.use.epsv=TRUE,
                           dirlistonly = TRUE)
   }
@@ -48,7 +45,7 @@ dwd_down <- function(dwd_var = "air_temperature",
   station_url_2 <- unlist(strsplit(as.character(station_url), "\r\n"))
 
   # get url of the txt-file with station information
-  station_url_3 <- station_url_2[(str_sub(unlist(station_url_2), -3, -1) == "txt")==T]
+  station_url_3 <- station_url_2[(stringr::str_sub(unlist(station_url_2), -3, -1) == "txt")==T]
 
   # download txt-file with station information
   if(dwd_var == "solar"){
@@ -73,20 +70,20 @@ dwd_down <- function(dwd_var = "air_temperature",
   station_infos_4[,6] <- as.numeric(unlist(lapply(station_infos_4[,6], as.vector)))
 
   if(dwd_var == "solar"){
-    recent_urls <- getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var,"/", sep = ""),
+    recent_urls <- RCurl::getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var,"/", sep = ""),
                           verbose=TRUE,ftp.use.epsv=TRUE,
                           dirlistonly = TRUE)
     recent_urls_2 <- unlist(strsplit(as.character(recent_urls), "\r\n"))
     recent_urls_3 <- recent_urls_2[(str_sub(unlist(recent_urls_2), -3, -1) == "zip")==T]
 
   }else{
-    recent_urls <- getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var,"/recent/", sep = ""),
+    recent_urls <- RCurl::getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var,"/recent/", sep = ""),
                           verbose=TRUE,ftp.use.epsv=TRUE,
                           dirlistonly = TRUE)
     recent_urls_2 <- unlist(strsplit(as.character(recent_urls), "\r\n"))
     recent_urls_3 <- recent_urls_2[(str_sub(unlist(recent_urls_2), -3, -1) == "zip")==T]
 
-    historic_urls <- getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var, "/historical/", sep = ""),
+    historic_urls <- RCurl::getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var, "/historical/", sep = ""),
                             verbose=TRUE,ftp.use.epsv=TRUE,
                             dirlistonly = TRUE)
     historic_urls_2 <- unlist(strsplit(as.character(historic_urls), "\r\n"))
