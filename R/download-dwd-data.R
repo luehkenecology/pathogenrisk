@@ -10,7 +10,7 @@
 #' @return
 #' @export
 #'
-#' @examples dwd_down()
+#' @examples
 dwd_down <- function(dwd_var = c("air_temperature", "precipitation","wind","solar"),
                      x_coordinates = c(9.000461),
                      y_coordinates = c(50.13213),
@@ -18,10 +18,11 @@ dwd_down <- function(dwd_var = c("air_temperature", "precipitation","wind","sola
                      from_date = "2017-03-01",
                      to_date = "2017-10-31"){
 
+  # if not specified, use the first argument in the vector = air_temperature----------------------------------------------------------------------
   dwd_var <- match.arg(dwd_var)
 
-  # load libraries----------------------------------------------------------------------
-  source("R/down_unzip_dwd.R")
+  # load function----------------------------------------------------------------------
+  source('R/down_unzip_dwd.R')
 
   # download station info----------------------------------------------------------------------
   # temporary directory
@@ -74,26 +75,26 @@ dwd_down <- function(dwd_var = c("air_temperature", "precipitation","wind","sola
                           verbose=TRUE,ftp.use.epsv=TRUE,
                           dirlistonly = TRUE)
     recent_urls_2 <- unlist(strsplit(as.character(recent_urls), "\r\n"))
-    recent_urls_3 <- recent_urls_2[(str_sub(unlist(recent_urls_2), -3, -1) == "zip")==T]
+    recent_urls_3 <- recent_urls_2[(stringr::str_sub(unlist(recent_urls_2), -3, -1) == "zip")==T]
 
   }else{
     recent_urls <- RCurl::getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var,"/recent/", sep = ""),
                           verbose=TRUE,ftp.use.epsv=TRUE,
                           dirlistonly = TRUE)
     recent_urls_2 <- unlist(strsplit(as.character(recent_urls), "\r\n"))
-    recent_urls_3 <- recent_urls_2[(str_sub(unlist(recent_urls_2), -3, -1) == "zip")==T]
+    recent_urls_3 <- recent_urls_2[(stringr::str_sub(unlist(recent_urls_2), -3, -1) == "zip")==T]
 
     historic_urls <- RCurl::getURL(paste("ftp://ftp-cdc.dwd.de/pub/CDC/observations_germany/climate/hourly/",dwd_var, "/historical/", sep = ""),
                             verbose=TRUE,ftp.use.epsv=TRUE,
                             dirlistonly = TRUE)
     historic_urls_2 <- unlist(strsplit(as.character(historic_urls), "\r\n"))
-    historic_urls_3 <- historic_urls_2[(str_sub(unlist(historic_urls_2), -3, -1) == "zip")==T]
+    historic_urls_3 <- historic_urls_2[(stringr::str_sub(unlist(historic_urls_2), -3, -1) == "zip")==T]
   }
 
   # get urls of data files
   if(dwd_var == "solar"){
     # extract station id from the download path
-    recent_urls_3_data <- data.frame(Stations_id = str_sub(recent_urls_3, -13, -9),
+    recent_urls_3_data <- data.frame(Stations_id = stringr::str_sub(recent_urls_3, -13, -9),
                                      url = recent_urls_3)
 
     station_info_merge_all_3 <- merge(station_infos_4, recent_urls_3_data, by = "Stations_id", all.y = T)
@@ -101,9 +102,9 @@ dwd_down <- function(dwd_var = c("air_temperature", "precipitation","wind","sola
   } else{
 
     # extract station id from the download path
-    recent_urls_3_data <- data.frame(Stations_id = str_sub(recent_urls_3, -13, -9),
+    recent_urls_3_data <- data.frame(Stations_id = stringr::str_sub(recent_urls_3, -13, -9),
                                      url = recent_urls_3)
-    historic_urls_3_data <- data.frame(Stations_id = str_sub(historic_urls_3, -32, -28),
+    historic_urls_3_data <- data.frame(Stations_id = stringr::str_sub(historic_urls_3, -32, -28),
                                        url = historic_urls_3)
 
     station_info_merge_recent <- merge(station_infos_4, recent_urls_3_data, by = "Stations_id", all.y = T)
@@ -120,16 +121,16 @@ dwd_down <- function(dwd_var = c("air_temperature", "precipitation","wind","sola
     station_info_merge_all_3[,8] <- paste("historical/", station_info_merge_all_3[,8], sep = "")}
 
   # convert all start dates
-  station_info_merge_all_3$start_date <- as.POSIXlt(as.Date(paste(str_sub(station_info_merge_all_3[,2], 1, 4),
-                                                                  str_sub(station_info_merge_all_3[,2], 5, 6),
-                                                                  str_sub(station_info_merge_all_3[,2], 7, 8),
+  station_info_merge_all_3$start_date <- as.POSIXlt(as.Date(paste(stringr::str_sub(station_info_merge_all_3[,2], 1, 4),
+                                                                  stringr::str_sub(station_info_merge_all_3[,2], 5, 6),
+                                                                  stringr::str_sub(station_info_merge_all_3[,2], 7, 8),
                                                                   sep="-")),
                                                     format = "%Y-%m-%d")
 
   # convert all end dates
-  station_info_merge_all_3$end_date <- as.POSIXlt(as.Date(paste(str_sub(station_info_merge_all_3[,3], 1, 4),
-                                                                str_sub(station_info_merge_all_3[,3], 5, 6),
-                                                                str_sub(station_info_merge_all_3[,3], 7, 8),
+  station_info_merge_all_3$end_date <- as.POSIXlt(as.Date(paste(stringr::str_sub(station_info_merge_all_3[,3], 1, 4),
+                                                                stringr::str_sub(station_info_merge_all_3[,3], 5, 6),
+                                                                stringr::str_sub(station_info_merge_all_3[,3], 7, 8),
                                                                 sep="-")),
                                                   format = "%Y-%m-%d")
 
@@ -189,7 +190,7 @@ dwd_down <- function(dwd_var = c("air_temperature", "precipitation","wind","sola
     if(dwd_var == "solar"){
 
       # date to POSIXct
-      rdata$date <- as.POSIXct(as.character(str_sub(as.character(rdata$MESS_DATUM), 1,10)),
+      rdata$date <- as.POSIXct(as.character(stringr::str_sub(as.character(rdata$MESS_DATUM), 1,10)),
                                format = "%Y%m%d%H")
     }else{
 
