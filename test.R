@@ -4,7 +4,7 @@ devtools::document()
 
 ?minDist()
 
-?sum
+?sumgfgfg
 
 ?sum_nums(1,2)
 hello()
