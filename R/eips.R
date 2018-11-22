@@ -11,6 +11,8 @@ fdf[[6]] <- function(Temp, t_res){(0.000126*Temp+(Temp-14.244)*sqrt(34.4-Temp))/
 eips <- function(Temp, pathogen = "WNV", t_res = 24){
   vec <-  which((c("BTV", "WNV", "SBV", "DENV", "dirofilaria", "malaria") %in% c(pathogen)) == T)
   res <- lapply(fdf[c(vec)], function(x) x(Temp, t_res))
-  do.call(cbind, res)
+  res2 <- data.frame(do.call(cbind, res))
+  dimnames(res2)[[2]] <- c("BTV", "WNV", "SBV", "DENV", "dirofilaria", "malaria")[vec]
+  return(res2)
 }
 
